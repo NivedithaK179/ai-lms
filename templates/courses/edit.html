@@ -1,0 +1,229 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Edit Course - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <div>
+        <h1>Edit Course</h1>
+        <a href="/quiz/manage/{{ course_id }}/" class="btn btn-secondary btn-sm">Manage Quizzes</a>
+    </div>
+    <a href="/instructor/" class="btn btn-secondary">Back to My Courses</a>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;">
+    <div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 style="margin:0;">Course Details</h3>
+            </div>
+            <div class="card-body">
+                <form id="edit-course-form">
+                    <div class="form-group">
+                        <label class="form-label">Course Title</label>
+                        <input type="text" class="form-input" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Short Description</label>
+                        <input type="text" class="form-input" name="short_description">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Description</label>
+                        <textarea class="form-textarea" name="description" required style="min-height:150px;"></textarea>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Level</label>
+                            <select class="form-select" name="level">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Price ($)</label>
+                            <input type="number" class="form-input" name="price" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select class="form-select" name="status">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Lessons -->
+        <div class="card">
+            <div class="card-header d-flex justify-between align-center">
+                <h3 style="margin:0;">Lessons</h3>
+                <button class="btn btn-primary btn-sm" id="add-lesson-btn">Add Lesson</button>
+            </div>
+            <div class="card-body" id="lessons-container" style="padding:0;">
+                <div class="text-center" style="padding:2rem;">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h3 style="margin:0;">Course Stats</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <div class="text-muted">Total Lessons</div>
+                    <div style="font-size:1.5rem;font-weight:600;" id="stat-lessons">-</div>
+                </div>
+                <div class="mb-2">
+                    <div class="text-muted">Enrolled Students</div>
+                    <div style="font-size:1.5rem;font-weight:600;" id="stat-students">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Lesson Modal -->
+<div id="lesson-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+    <div class="card" style="width:100%;max-width:600px;margin:2rem;">
+        <div class="card-header d-flex justify-between align-center">
+            <h3 style="margin:0;">Add Lesson</h3>
+            <button class="btn btn-sm" onclick="document.getElementById('lesson-modal').style.display='none'">✕</button>
+        </div>
+        <div class="card-body">
+            <form id="add-lesson-form">
+                <div class="form-group">
+                    <label class="form-label">Lesson Title</label>
+                    <input type="text" class="form-input" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Slug</label>
+                    <input type="text" class="form-input" name="slug" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-textarea" name="content" required style="min-height:150px;"></textarea>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Video URL (optional)</label>
+                        <input type="url" class="form-input" name="video_url" placeholder="YouTube/Vimeo URL">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (minutes)</label>
+                        <input type="number" class="form-input" name="duration_minutes" value="0" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="is_free"> Free Preview
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Lesson</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const courseId = {{ course_id }};
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Load course data
+        const course = await Courses.get(courseId);
+        
+        // Populate form
+        const form = document.getElementById('edit-course-form');
+        form.querySelector('[name="title"]').value = course.title;
+        form.querySelector('[name="short_description"]').value = course.short_description || '';
+        form.querySelector('[name="description"]').value = course.description;
+        form.querySelector('[name="level"]').value = course.level;
+        form.querySelector('[name="price"]').value = course.price;
+        form.querySelector('[name="status"]').value = course.status;
+        
+        // Stats
+        document.getElementById('stat-lessons').textContent = course.total_lessons;
+        document.getElementById('stat-students').textContent = course.enrolled_count;
+        
+        // Render lessons
+        renderLessons(course.lessons);
+        
+        // Form submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            const { response } = await API.put(`/courses/${courseId}/`, data);
+            if (response.ok) {
+                UI.showAlert('Course updated!', 'success');
+            } else {
+                UI.showAlert('Failed to update course', 'danger');
+            }
+        });
+        
+        // Add lesson modal
+        document.getElementById('add-lesson-btn').addEventListener('click', () => {
+            document.getElementById('lesson-modal').style.display = 'flex';
+        });
+        
+        // Add lesson form
+        document.getElementById('add-lesson-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            data.is_free = e.target.querySelector('[name="is_free"]').checked;
+            data.order = course.lessons.length;
+            data.content_type = data.video_url ? 'video' : 'text';
+            
+            const { response, data: result } = await API.post(`/courses/${courseId}/lessons/create/`, data);
+            if (response.ok) {
+                document.getElementById('lesson-modal').style.display = 'none';
+                e.target.reset();
+                location.reload();
+            } else {
+                UI.showAlert('Failed to add lesson', 'danger');
+            }
+        });
+    });
+    
+    function renderLessons(lessons) {
+        const container = document.getElementById('lessons-container');
+        
+        if (lessons.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted" style="padding:2rem;">No lessons yet. Add your first lesson!</div>';
+            return;
+        }
+        
+        container.innerHTML = lessons.map((lesson, i) => `
+            <div style="padding:1rem;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:1rem;">
+                <span style="width:32px;height:32px;border-radius:50%;background:var(--gray-200);display:flex;align-items:center;justify-content:center;">
+                    ${i + 1}
+                </span>
+                <div style="flex:1;">
+                    <strong>${lesson.title}</strong>
+                    <div style="font-size:0.875rem;color:var(--gray-500);">
+                        ${lesson.content_type} • ${lesson.duration_minutes} min
+                        ${lesson.is_free ? '<span class="badge badge-success">Free</span>' : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+</script>
+{% endblock %}

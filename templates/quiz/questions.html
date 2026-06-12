@@ -1,0 +1,99 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Quiz Questions - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <div>
+        <h1 id="quiz-title">Quiz Questions</h1>
+        <p class="text-muted">Add and manage question content for this quiz.</p>
+    </div>
+    <div>
+        <a href="#" id="back-to-manage" class="btn btn-secondary">Back to Quiz List</a>
+    </div>
+</div>
+
+<div id="quiz-questions-container">
+    <div class="card">
+        <div class="card-body" id="question-list">
+            <div class="text-center">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h3 style="margin:0;">Add Question</h3>
+    </div>
+    <div class="card-body">
+        <form id="add-question-form">
+            <div class="form-group">
+                <label class="form-label">Question Text</label>
+                <textarea class="form-textarea" name="text" required style="min-height:120px;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Question Type</label>
+                    <select class="form-select" name="question_type">
+                        <option value="single">Single Choice</option>
+                        <option value="multiple">Multiple Choice</option>
+                        <option value="true_false">True / False</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Points</label>
+                    <input type="number" class="form-input" name="points" value="1" min="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Explanation (optional)</label>
+                <textarea class="form-textarea" name="explanation" style="min-height:80px;"></textarea>
+            </div>
+            <div class="mb-3">
+                <p class="text-muted">Answer Choices</p>
+            </div>
+            <div class="grid gap-2" style="display:grid;grid-template-columns:1fr 1fr;">
+                <div>
+                    <label class="form-label">Choice 1</label>
+                    <input type="text" class="form-input" name="choice_1" required>
+                    <div class="form-checkbox">
+                        <label><input type="checkbox" name="correct_1"> Correct</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Choice 2</label>
+                    <input type="text" class="form-input" name="choice_2" required>
+                    <div class="form-checkbox">
+                        <label><input type="checkbox" name="correct_2"> Correct</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Choice 3</label>
+                    <input type="text" class="form-input" name="choice_3">
+                    <div class="form-checkbox">
+                        <label><input type="checkbox" name="correct_3"> Correct</label>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Choice 4</label>
+                    <input type="text" class="form-input" name="choice_4">
+                    <div class="form-checkbox">
+                        <label><input type="checkbox" name="correct_4"> Correct</label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Save Question</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initQuizQuestions({{ quiz_id }});
+    });
+</script>
+{% endblock %}

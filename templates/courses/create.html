@@ -1,0 +1,107 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Create Course - AI LMS{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Create New Course</h1>
+
+<div class="card" style="max-width:800px;">
+    <div class="card-body">
+        <form id="create-course-form">
+            <div class="form-group">
+                <label class="form-label">Course Title</label>
+                <input type="text" class="form-input" name="title" required placeholder="e.g., Introduction to Python">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Slug (URL)</label>
+                <input type="text" class="form-input" name="slug" required placeholder="e.g., intro-to-python">
+                <span class="form-help">URL-friendly version of the title</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Short Description</label>
+                <input type="text" class="form-input" name="short_description" placeholder="Brief course summary (max 500 chars)" maxlength="500">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Full Description</label>
+                <textarea class="form-textarea" name="description" required placeholder="Detailed course description..." style="min-height:200px;"></textarea>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Level</label>
+                    <select class="form-select" name="level">
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Price ($)</label>
+                    <input type="number" class="form-input" name="price" value="0" min="0" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Duration (hours)</label>
+                    <input type="number" class="form-input" name="duration_hours" value="0" min="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                </select>
+            </div>
+            
+            <div class="d-flex gap-1">
+                <button type="submit" class="btn btn-primary">Create Course</button>
+                <a href="/instructor/" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('create-course-form');
+        
+        // Auto-generate slug from title
+        form.querySelector('[name="title"]').addEventListener('input', (e) => {
+            const slug = e.target.value
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            form.querySelector('[name="slug"]').value = slug;
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            UI.showLoader();
+            const { response, data: result } = await API.post('/courses/', data);
+            console.log(result);
+            UI.hideLoader();
+            
+            if (response.ok) {
+                UI.showAlert('Course created successfully!', 'success');
+                console.log(result);
+                setTimeout(() => {
+                    window.location.href = `/courses/${result.id}/edit/`;
+                }, 1000);
+            } else {
+                const errors = Object.values(result).flat().join(', ');
+                UI.showAlert(errors || 'Failed to create course', 'danger');
+            }
+        });
+    });
+</script>
+{% endblock %}

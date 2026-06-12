@@ -1,0 +1,84 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Instructor Dashboard - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h1>My Courses</h1>
+    <a href="/courses/create/" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        Create Course
+    </a>
+</div>
+
+<div id="instructor-courses">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const container = document.getElementById('instructor-courses');
+        
+        try {
+            const courses = await API.get('/courses/my-courses/');
+            
+            if (courses.results && courses.results.length > 0) {
+                container.innerHTML = `
+                    <div class="table-container card">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                    <th>Students</th>
+                                    <th>Lessons</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${courses.results.map(course => `
+                                    <tr>
+                                        <td>
+                                            <a href="/courses/${course.id}/">${course.title}</a>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-${course.status === 'published' ? 'success' : 'warning'}">
+                                                ${course.status}
+                                            </span>
+                                        </td>
+                                        <td>${course.enrolled_count}</td>
+                                        <td>${course.total_lessons}</td>
+                                        <td>
+                                            <a href="/courses/${course.id}/edit/" class="btn btn-sm btn-secondary">Edit</a>
+                                            <a href="/quiz/manage/${course.id}/" class="btn btn-sm btn-secondary">Quizzes</a>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <p class="text-muted">You haven't created any courses yet.</p>
+                            <a href="/courses/create/" class="btn btn-primary">Create Your First Course</a>
+                        </div>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            container.innerHTML = '<div class="alert alert-danger">Failed to load courses</div>';
+        }
+    });
+</script>
+{% endblock %}

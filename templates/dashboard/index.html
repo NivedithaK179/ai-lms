@@ -1,0 +1,77 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Dashboard - AI LMS{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">Welcome back, {{ request.user.first_name }}!</h1>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-card-label">Enrolled Courses</div>
+        <div class="stat-card-value primary" id="stat-total-courses">-</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Completed</div>
+        <div class="stat-card-value success" id="stat-completed">-</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">In Progress</div>
+        <div class="stat-card-value" id="stat-in-progress">-</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-card-label">Quiz Attempts</div>
+        <div class="stat-card-value" id="stat-quizzes">-</div>
+    </div>
+</div>
+
+<!-- Enrolled Courses -->
+<div class="card mb-3">
+    <div class="card-header d-flex justify-between align-center">
+        <h3 style="margin:0;">My Courses</h3>
+        <a href="/courses/" class="btn btn-primary btn-sm">Browse All</a>
+    </div>
+    <div id="enrolled-courses">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3 style="margin:0;">Quick Actions</h3>
+    </div>
+    <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+            <a href="/courses/" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.19 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55z"/>
+                </svg>
+                Browse Courses
+            </a>
+            <a href="/progress/" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+                View Progress
+            </a>
+            <a href="/profile/" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                Edit Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initDashboard();
+    });
+</script>
+{% endblock %}

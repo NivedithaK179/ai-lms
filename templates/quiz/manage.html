@@ -1,0 +1,32 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Manage Quizzes - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <div>
+        <h1>Manage Quizzes</h1>
+        <p id="course-title" class="text-muted"></p>
+    </div>
+    <div>
+        <a href="/courses/{{ course_id }}/edit/" class="btn btn-secondary">Back to Course</a>
+        <a href="/quiz/create/{{ course_id }}/" class="btn btn-primary">Create Quiz</a>
+    </div>
+</div>
+
+<div id="manage-quiz-container">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initQuizManage({{ course_id }});
+    });
+</script>
+{% endblock %}

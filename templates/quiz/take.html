@@ -1,0 +1,21 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Quiz - AI LMS{% endblock %}
+
+{% block content %}
+<div class="quiz-container" id="quiz-container">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initQuiz({{ quiz_id }});
+    });
+</script>
+{% endblock %}

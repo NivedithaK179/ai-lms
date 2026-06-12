@@ -1,0 +1,25 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Lesson - AI LMS{% endblock %}
+
+{% block content %}
+<div class="lesson-layout">
+    <div id="lesson-content" class="lesson-content">
+        <div class="text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+    
+    <div class="lesson-sidebar">
+        <div id="ai-chat-container"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initLesson({{ course_id }}, {{ lesson_id }});
+    });
+</script>
+{% endblock %}

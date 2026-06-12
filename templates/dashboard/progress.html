@@ -1,0 +1,23 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}My Progress - AI LMS{% endblock %}
+
+{% block content %}
+<h1 class="mb-3">My Progress</h1>
+
+<div id="progress-container">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initProgress();
+    });
+</script>
+{% endblock %}

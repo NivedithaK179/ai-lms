@@ -1,0 +1,21 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Quiz Result - AI LMS{% endblock %}
+
+{% block content %}
+<div class="quiz-container" id="result-container">
+    <div class="card">
+        <div class="card-body text-center">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initQuizResult({{ attempt_id }});
+    });
+</script>
+{% endblock %}

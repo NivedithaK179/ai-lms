@@ -1,0 +1,80 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Courses - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h1>All Courses</h1>
+    <div class="d-flex gap-1">
+        <select class="form-select" id="filter-level" style="width:auto;">
+            <option value="">All Levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select>
+    </div>
+</div>
+
+<div class="courses-grid" id="courses-container">
+    <div class="text-center" style="grid-column:1/-1;">
+        <div class="loader"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initCourseList();
+        
+        // Filter handler
+        document.getElementById('filter-level').addEventListener('change', async (e) => {
+            const level = e.target.value;
+            const container = document.getElementById('courses-container');
+            container.innerHTML = '<div class="text-center" style="grid-column:1/-1;"><div class="loader"></div></div>';
+            
+            try {
+                const courses = await Courses.list(level ? { level } : {});
+                
+                if (courses.results && courses.results.length > 0) {
+                    container.innerHTML = courses.results.map(course => `
+                        <div class="course-card">
+                            <div class="course-card-thumbnail">
+                                ${course.thumbnail 
+                                    ? `<img src="${course.thumbnail}" alt="${course.title}">`
+                                    : `<div style="height:100%;display:flex;align-items:center;justify-content:center;background:var(--primary);">
+                                        <svg width="48" height="48" fill="white" viewBox="0 0 24 24">
+                                            <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                                        </svg>
+                                       </div>`
+                                }
+                                <span class="course-card-badge">${course.level}</span>
+                            </div>
+                            <div class="course-card-body">
+                                <a href="/courses/${course.id}/" class="course-card-title">${course.title}</a>
+                                <div class="course-card-meta">
+                                    <span>👤 ${course.instructor_name}</span>
+                                    <span>📚 ${course.total_lessons} lessons</span>
+                                </div>
+                                <div class="d-flex justify-between align-center">
+                                    <span class="course-card-price ${course.price === '0.00' ? 'free' : ''}">
+                                        ${UI.formatPrice(course.price)}
+                                    </span>
+                                    ${course.is_enrolled 
+                                        ? '<span class="badge badge-success">Enrolled</span>'
+                                        : ''
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p class="text-center text-muted" style="grid-column:1/-1;">No courses found.</p>';
+                }
+            } catch (e) {
+                container.innerHTML = '<p class="text-center text-danger" style="grid-column:1/-1;">Failed to load courses.</p>';
+            }
+        });
+    });
+</script>
+{% endblock %}

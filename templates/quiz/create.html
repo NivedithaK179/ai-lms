@@ -1,0 +1,65 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Create Quiz - AI LMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center mb-3">
+    <div>
+        <h1>Create Quiz</h1>
+        <p id="course-title" class="text-muted"></p>
+    </div>
+    <div>
+        <a href="/quiz/manage/{{ course_id }}/" class="btn btn-secondary">Back to Quizzes</a>
+    </div>
+</div>
+
+<div id="quiz-create-container" class="card">
+    <div class="card-body">
+        <form id="create-quiz-form">
+            <div class="form-group">
+                <label class="form-label">Quiz Title</label>
+                <input type="text" class="form-input" name="title" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" name="description" style="min-height:120px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Associate with Lesson</label>
+                <select class="form-select" id="lesson-select" name="lesson"></select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label class="form-label">Pass Score (%)</label>
+                    <input type="number" class="form-input" name="pass_score" value="70" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Time Limit (minutes)</label>
+                    <input type="number" class="form-input" name="time_limit_minutes" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Attempts</label>
+                    <input type="number" class="form-input" name="max_attempts" value="0" min="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Publish Options</label>
+                <div class="d-flex gap-3">
+                    <label><input type="checkbox" name="shuffle_questions"> Shuffle Questions</label>
+                    <label><input type="checkbox" name="show_correct_answers" checked> Show Correct Answers</label>
+                    <label><input type="checkbox" name="is_published" checked> Publish Now</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Quiz</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Pages.initQuizCreate({{ course_id }});
+    });
+</script>
+{% endblock %}
