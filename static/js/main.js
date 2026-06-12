@@ -576,6 +576,7 @@ const Pages = {
         UI.showLoader();
         try {
             const courses = await Courses.list();
+            console.log(courses);
             UI.hideLoader();
 
             if (courses.results && courses.results.length > 0) {
@@ -844,7 +845,7 @@ const Pages = {
 
                 if (response.ok) {
                     console.log('Result=', result);
-                    alert(JSON.stringify(result));
+                    //alert(JSON.stringify(result));
                     UI.showAlert('Quiz created successfully.', 'success');
                     setTimeout(() => {
                         window.location.href = `/quiz/${result.id}/questions/`;
