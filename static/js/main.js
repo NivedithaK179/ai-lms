@@ -34,6 +34,10 @@ class APIClient {
             'Content-Type': 'application/json',
             ...options.headers
         };
+        const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+        if (csrftoken) {
+            headers['X-CSRFToken'] = csrftoken;
+        }
 
         const accessToken = this.accessToken || localStorage.getItem('access_token');
         if (accessToken) {
@@ -45,6 +49,7 @@ class APIClient {
                 ...options,
                 headers
             });
+            console.log(headers);
 
             // Handle token refresh
             if (response.status === 401 && this.refreshToken) {

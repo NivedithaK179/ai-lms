@@ -341,12 +341,18 @@ def lesson_page(request, course_id, lesson_id):
 
 
 @login_required
+def dashboard_page(request):
+    if request.user.role in ['admin', 'instructor']:
+        return redirect('instructor-dashboard')
+
+    return render(request, 'dashboard/index.html')
+
+@login_required
 def instructor_dashboard(request):
     """Instructor dashboard for managing courses."""
     if request.user.role not in ['instructor', 'admin']:
         return render(request, 'errors/403.html', status=403)
     return render(request, 'dashboard/instructor.html')
-
 
 @login_required
 def create_course_page(request):
